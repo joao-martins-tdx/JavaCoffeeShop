@@ -29,6 +29,10 @@ public class UploadController {
     @PostMapping("/uploadimage") public String uploadImage(Model model, @RequestParam("image") MultipartFile file, Principal principal) throws IOException {
         var name = file.getOriginalFilename().replace(" ", "_");
         var fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, name);
+        if (!fileNameAndPath.toFile().getCanonicalPath().startsWith(UPLOAD_DIRECTORY)) {
+            throw new IOException("Could not upload file: " + name);
+        }
+
         Files.write(fileNameAndPath, file.getBytes());
         model.addAttribute("msg", "Uploaded images: " + name);
 
